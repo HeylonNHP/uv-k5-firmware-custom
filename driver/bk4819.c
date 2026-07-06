@@ -1667,6 +1667,38 @@ void BK4819_PlayRoger(void)
 	BK4819_WriteRegister(BK4819_REG_30, 0xC1FE);   // 1 1 0000 0 1 1111 1 1 1 0
 }
 
+void BK4819_PlayRoger3(void)
+{
+	// Three-tone roger beep: 430 Hz, 870 Hz, 1750 Hz, 100 ms each, no gaps.
+	const uint16_t tones_Hz[] = {430, 870, 1750};
+
+	BK4819_EnterTxMute();
+	BK4819_SetAF(BK4819_AF_MUTE);
+
+	BK4819_WriteRegister(BK4819_REG_70, BK4819_REG_70_ENABLE_TONE1 | (66u << BK4819_REG_70_SHIFT_TONE1_TUNING_GAIN));
+
+	BK4819_EnableTXLink();
+	SYSTEM_DelayMs(50);
+
+	// Unmute once, then program each successive tone into REG_71 while the
+	// previous one is still playing, so there are no gaps between tones.
+	BK4819_ExitTxMute();
+
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[0]));
+	SYSTEM_DelayMs(100);
+
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[1]));
+	SYSTEM_DelayMs(100);
+
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[2]));
+	SYSTEM_DelayMs(100);
+
+	BK4819_EnterTxMute();
+
+	BK4819_WriteRegister(BK4819_REG_70, 0x0000);
+	BK4819_WriteRegister(BK4819_REG_30, 0xC1FE);   // 1 1 0000 0 1 1111 1 1 1 0
+}
+
 void BK4819_PlayRogerMDC(void)
 {
 	unsigned int i;

@@ -284,11 +284,12 @@ const char gSubMenu_PONMSG[][8] =
 	"NONE"
 };
 
-const char gSubMenu_ROGER[][6] =
+const char gSubMenu_ROGER[][10] =
 {
 	"OFF",
 	"ROGER",
-	"MDC"
+	"MDC",
+	"Rick Roll"
 };
 
 const char gSubMenu_RESET[][4] =

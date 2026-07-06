@@ -1080,6 +1080,9 @@ void RADIO_SendEndOfTransmission(bool playRoger)
 		if (gEeprom.ROGER == ROGER_MODE_ROGER)
 			BK4819_PlayRoger();
 		else
+		if (gEeprom.ROGER == ROGER_MODE_ROGER_3)
+			BK4819_PlayRoger3();
+		else
 		if (gEeprom.ROGER == ROGER_MODE_MDC)
 			BK4819_PlayRogerMDC();
 	}

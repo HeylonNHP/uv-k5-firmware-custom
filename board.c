@@ -605,7 +605,7 @@ void BOARD_EEPROM_Init(void)
 	#ifdef ENABLE_ALARM
 		gEeprom.ALARM_MODE                 = (Data[0] <  2) ? Data[0] : true;
 	#endif
-	gEeprom.ROGER                          = (Data[1] <  3) ? Data[1] : ROGER_MODE_OFF;
+	gEeprom.ROGER                          = (Data[1] <  4) ? Data[1] : ROGER_MODE_OFF;
 	// Data[2] empty slot
 	gEeprom.TX_VFO                         = (Data[3] <  2) ? Data[3] : 0;
 	gEeprom.BATTERY_TYPE                   = (Data[4] < BATTERY_TYPE_UNKNOWN) ? Data[4] : BATTERY_TYPE_1600_MAH;
