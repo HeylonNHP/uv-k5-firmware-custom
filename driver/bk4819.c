@@ -1669,8 +1669,15 @@ void BK4819_PlayRoger(void)
 
 void BK4819_PlayRoger3(void)
 {
-	// Three-tone roger beep: 430 Hz, 870 Hz, 1750 Hz, 100 ms each, no gaps.
-	const uint16_t tones_Hz[] = {430, 870, 1750};
+	// Never Gonna Give You Up - chorus melody, transposed up one octave to sit
+	// in the 300-3000 Hz CB passband. Frequencies rounded to nearest integer.
+	// 16 notes, 265 ms each except the 7th and 16th (531 ms). No gaps.
+	static const uint16_t tones_Hz[16]   = {466, 523, 622, 523, 698, 698, 622,
+	                                         466, 523, 622, 523, 622, 622, 587,
+	                                         523, 466};
+	static const uint16_t durations_ms[16] = {265, 265, 265, 265, 265, 265, 531,
+	                                          265, 265, 265, 265, 265, 265, 265,
+	                                          265, 265};
 
 	BK4819_EnterTxMute();
 	BK4819_SetAF(BK4819_AF_MUTE);
@@ -1684,14 +1691,10 @@ void BK4819_PlayRoger3(void)
 	// previous one is still playing, so there are no gaps between tones.
 	BK4819_ExitTxMute();
 
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[0]));
-	SYSTEM_DelayMs(100);
-
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[1]));
-	SYSTEM_DelayMs(100);
-
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[2]));
-	SYSTEM_DelayMs(100);
+	for (unsigned int i = 0; i < 16; i++) {
+		BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[i]));
+		SYSTEM_DelayMs(durations_ms[i]);
+	}
 
 	BK4819_EnterTxMute();
 
