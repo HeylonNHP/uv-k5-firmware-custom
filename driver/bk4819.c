@@ -1637,8 +1637,8 @@ void BK4819_PrepareFSKReceive(void)
 
 void BK4819_PlayRoger(void)
 {
-	// Three-tone roger beep: 430 Hz, 870 Hz, 1750 Hz, 100 ms each, no gaps.
-	const uint16_t tones_Hz[] = {430, 870, 1750};
+	// Three-tone roger beep: 435 Hz, 875 Hz, 1750 Hz, 100 ms each, no gaps.
+	const uint16_t tones_Hz[] = {435, 875, 1750};
 
 	BK4819_EnterTxMute();
 	BK4819_SetAF(BK4819_AF_MUTE);
