@@ -1637,14 +1637,8 @@ void BK4819_PrepareFSKReceive(void)
 
 void BK4819_PlayRoger(void)
 {
-	#if 0
-		const uint32_t tone1_Hz = 500;
-		const uint32_t tone2_Hz = 700;
-	#else
-		// motorola type
-		const uint32_t tone1_Hz = 1540;
-		const uint32_t tone2_Hz = 1310;
-	#endif
+	// Three-tone roger beep: 430 Hz, 870 Hz, 1750 Hz, 100 ms each, no gaps.
+	const uint16_t tones_Hz[] = {430, 870, 1750};
 
 	BK4819_EnterTxMute();
 	BK4819_SetAF(BK4819_AF_MUTE);
@@ -1654,16 +1648,19 @@ void BK4819_PlayRoger(void)
 	BK4819_EnableTXLink();
 	SYSTEM_DelayMs(50);
 
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tone1_Hz));
-
+	// Unmute once, then program each successive tone into REG_71 while the
+	// previous one is still playing, so there are no gaps between tones.
 	BK4819_ExitTxMute();
-	SYSTEM_DelayMs(80);
-	BK4819_EnterTxMute();
 
-	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tone2_Hz));
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[0]));
+	SYSTEM_DelayMs(100);
 
-	BK4819_ExitTxMute();
-	SYSTEM_DelayMs(80);
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[1]));
+	SYSTEM_DelayMs(100);
+
+	BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[2]));
+	SYSTEM_DelayMs(100);
+
 	BK4819_EnterTxMute();
 
 	BK4819_WriteRegister(BK4819_REG_70, 0x0000);
