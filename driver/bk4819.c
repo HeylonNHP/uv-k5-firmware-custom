@@ -1671,13 +1671,20 @@ void BK4819_PlayRoger3(void)
 {
 	// Never Gonna Give You Up - chorus melody, transposed up one octave to sit
 	// in the 300-3000 Hz CB passband. Frequencies rounded to nearest integer.
-	// 16 notes, 265 ms each except the 7th and 16th (531 ms). No gaps.
-	static const uint16_t tones_Hz[16]   = {466, 523, 622, 523, 698, 698, 622,
-	                                         466, 523, 622, 523, 622, 622, 587,
-	                                         523, 466};
-	static const uint16_t durations_ms[16] = {265, 265, 265, 265, 265, 265, 531,
-	                                          265, 265, 265, 265, 265, 265, 265,
-	                                          265, 265};
+	// 31 entries: 16 tones interleaved with 15 silences (freq=0). 10 ms
+	// silences separate most notes; a 200 ms silence separates the two phrases.
+	static const uint16_t tones_Hz[31] = {
+		466,    0, 523,    0, 622,    0, 523,    0,
+		698,    0, 698,    0, 622,    0, 466,    0,
+		523,    0, 622,    0, 523,    0, 622,    0,
+		622,    0, 587,  555, 523,  495, 466
+	};
+	static const uint16_t durations_ms[31] = {
+		150,  10, 150,  10, 150,  10, 150,  10,
+		400,  10, 400,  10, 650, 200, 150,  10,
+		150,  10, 150,  10, 150,  10, 400,  10,
+		400,  10, 450,  35,  35,  35, 150
+	};
 
 	BK4819_EnterTxMute();
 	BK4819_SetAF(BK4819_AF_MUTE);
@@ -1687,12 +1694,18 @@ void BK4819_PlayRoger3(void)
 	BK4819_EnableTXLink();
 	SYSTEM_DelayMs(50);
 
-	// Unmute once, then program each successive tone into REG_71 while the
-	// previous one is still playing, so there are no gaps between tones.
+	// First entry is a tone, so we start unmuted. Each silence in the array
+	// (freq=0) mutes for its duration; each tone unmutes and programs the
+	// next frequency into REG_71 while the previous one is still playing.
 	BK4819_ExitTxMute();
 
-	for (unsigned int i = 0; i < 16; i++) {
-		BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[i]));
+	for (unsigned int i = 0; i < 31; i++) {
+		if (tones_Hz[i] == 0)
+			BK4819_EnterTxMute();
+		else {
+			BK4819_ExitTxMute();
+			BK4819_WriteRegister(BK4819_REG_71, scale_freq(tones_Hz[i]));
+		}
 		SYSTEM_DelayMs(durations_ms[i]);
 	}
 
