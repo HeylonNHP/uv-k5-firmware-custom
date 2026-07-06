@@ -211,17 +211,14 @@ You can get it from: https://releases.llvm.org/download.html
 
 ## Building
 
-If you have docker installed you can use [compile-with-docker.bat](./compile-with-docker.bat) (Windows) or [compile-with-docker.sh](./compile-with-docker.sh) (Linux/Mac), the output files are created in `compiled-firmware` folder. This method gives significantly smaller binaries, I've seen differences up to 1kb, so it can fit more functionalities this way. The challenge can be (or not) installing docker itself.
+See the dedicated [BUILDING.md](./BUILDING.md) file for detailed build instructions, including:
 
+- **Compiler** requirements
+- **GitHub Codespace** build method (no local install needed)
+- **Docker** build method
+- **Windows** environment build method
 
-1. To compile:
-```
-make docker
-```
-2. To compile and flash:
-```
-make run
-```
+> The instructions above are adapted from the [egzumer/uv-k5-firmware-custom](https://github.com/egzumer/uv-k5-firmware-custom) repository.
 
 ## Credits
 
