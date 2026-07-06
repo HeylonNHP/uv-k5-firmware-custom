@@ -208,9 +208,10 @@ int TX_freq_check(const uint32_t Frequency)
 				return 0;
 			break;
 
-		case F_LOCK_PMR:
-			if (Frequency >= 44600625 && Frequency <= 44619375)
-				return 0;
+		case F_LOCK_NONE:
+			for (uint32_t i = 0; i < ARRAY_SIZE(frequencyBandTable); i++)
+				if (Frequency >= frequencyBandTable[i].lower && Frequency < frequencyBandTable[i].upper)
+					return 0;
 			break;
 
 		case F_LOCK_ALL:
