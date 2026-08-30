@@ -1397,9 +1397,17 @@ static void UpdateListening() {
 
   if ((IsPeakOverLevel() || monitorMode) && !gTailFound) {
     // Carrier is present (or monitor mode is on). Re-arm the dwell counter
-    // for the next silence. If the audio is currently muted from a prior
-    // dwell, ToggleRX(true) re-opens it.
-    ToggleRX(true);
+    // for the next silence. ToggleRX(true) only needs to fire on the
+    // muted->unmuted transition; on subsequent iterations audioState is
+    // already true and all of ToggleRX(true)'s side-effects (LED, AF DAC,
+    // AF bit, filter bandwidth, CSS-tail interrupt, dwell counter seed)
+    // are idempotent. This saves ~500 us of bit-banged SPI work per
+    // iteration (~5% CPU, ~800 wasted 16-bit SPI transfers/sec at the
+    // ~100 Hz listenT-gated rate). Same transition-guard pattern as
+    // chFrScanner.c:94's `if (!gScanPauseMode)`.
+    if (!audioState) {
+      ToggleRX(true);
+    }
     return;
   }
 
