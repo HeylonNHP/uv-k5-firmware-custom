@@ -374,7 +374,10 @@ Skip:
 						break;
 
 					case SCAN_RESUME_CO:
-						gScanPauseDelayIn_10ms = scan_pause_delay_in_7_10ms;
+						// Dwell for the user-configured number of seconds after the
+						// squelch closes. 0 = instant resume (today's behaviour when
+						// the user has not enabled the new feature).
+						gScanPauseDelayIn_10ms = gEeprom.SCAN_HOLD_AFTER_SQUELCH * 100;
 						gScheduleScanListen    = false;
 						break;
 

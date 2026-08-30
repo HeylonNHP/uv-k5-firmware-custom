@@ -179,6 +179,11 @@ int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax)
 			*pMax = ARRAY_SIZE(gSubMenu_SC_REV) - 1;
 			break;
 
+		case MENU_SC_HOLD:
+			*pMin = 0;
+			*pMax = ARRAY_SIZE(gSubMenu_SC_HOLD) - 1;
+			break;
+
 		case MENU_ROGER:
 			*pMin = 0;
 			*pMax = ARRAY_SIZE(gSubMenu_ROGER) - 1;
@@ -637,6 +642,10 @@ void MENU_AcceptSetting(void)
 			gEeprom.SCAN_RESUME_MODE = gSubMenuSelection;
 			break;
 
+		case MENU_SC_HOLD:
+			gEeprom.SCAN_HOLD_AFTER_SQUELCH = gSubMenuSelection;
+			break;
+
 		case MENU_MDF:
 			gEeprom.CHANNEL_DISPLAY_MODE = gSubMenuSelection;
 			break;
@@ -1047,6 +1056,10 @@ void MENU_ShowCurrentSetting(void)
 
 		case MENU_SC_REV:
 			gSubMenuSelection = gEeprom.SCAN_RESUME_MODE;
+			break;
+
+		case MENU_SC_HOLD:
+			gSubMenuSelection = gEeprom.SCAN_HOLD_AFTER_SQUELCH;
 			break;
 
 		case MENU_MDF:

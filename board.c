@@ -606,7 +606,7 @@ void BOARD_EEPROM_Init(void)
 		gEeprom.ALARM_MODE                 = (Data[0] <  2) ? Data[0] : true;
 	#endif
 	gEeprom.ROGER                          = (Data[1] <  4) ? Data[1] : ROGER_MODE_OFF;
-	// Data[2] empty slot
+	gEeprom.SCAN_HOLD_AFTER_SQUELCH        = (Data[2] <= 30) ? Data[2] : 5;   // 0..30 sec, default 5
 	gEeprom.TX_VFO                         = (Data[3] <  2) ? Data[3] : 0;
 	gEeprom.BATTERY_TYPE                   = (Data[4] < BATTERY_TYPE_UNKNOWN) ? Data[4] : BATTERY_TYPE_1600_MAH;
 	gEeprom.SQL_TONE                       = (Data[5] <  ARRAY_SIZE(CTCSS_Options)) ? Data[5] : 50;

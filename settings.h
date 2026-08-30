@@ -182,6 +182,7 @@ typedef struct {
 	uint8_t               BATTERY_SAVE;
 	uint8_t               BACKLIGHT_TIME;
 	uint8_t               SCAN_RESUME_MODE;
+	uint8_t               SCAN_HOLD_AFTER_SQUELCH;  // 0..30, seconds; persisted at 0x0EA8 Data[2]
 	uint8_t               SCAN_LIST_DEFAULT;
 	bool                  SCAN_LIST_ENABLED[2];
 	uint8_t               SCANLIST_PRIORITY_CH1[2];

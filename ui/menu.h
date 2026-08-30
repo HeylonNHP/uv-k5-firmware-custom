@@ -79,6 +79,7 @@ enum
 	MENU_VOICE,
 #endif
 	MENU_SC_REV,
+	MENU_SC_HOLD,    // post-squelch dwell time, 0..30 sec (shared by plain & spectrum scanners)
 	MENU_AUTOLK,
 	MENU_S_ADD1,
 	MENU_S_ADD2,

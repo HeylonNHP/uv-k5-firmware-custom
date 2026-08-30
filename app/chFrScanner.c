@@ -96,6 +96,9 @@ void CHFRSCANNER_Found(void)
 		case SCAN_RESUME_TO:
 			if (!gScanPauseMode)
 			{
+				// TIMEOUT mode keeps its original 5-second hold-from-found behaviour.
+				// The user-configured post-squelch dwell is applied in SCAN_RESUME_CO
+				// at the squelch-lost point (see app/app.c).
 				gScanPauseDelayIn_10ms = scan_pause_delay_in_1_10ms;
 				gScheduleScanListen    = false;
 				gScanPauseMode         = true;

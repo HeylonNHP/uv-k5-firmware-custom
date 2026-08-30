@@ -129,7 +129,7 @@ void SETTINGS_SaveSettings(void)
 		State[0] = false;
 	#endif
 	State[1] = gEeprom.ROGER;
-	// State[2] = empty slot
+	State[2] = gEeprom.SCAN_HOLD_AFTER_SQUELCH;   // 0..30 sec
 	State[3] = gEeprom.TX_VFO;
 	State[4] = gEeprom.BATTERY_TYPE;
 	State[5] = gEeprom.SQL_TONE;

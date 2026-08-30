@@ -66,6 +66,7 @@ const t_menu_item MenuList[] =
 	{"ChDele", VOICE_ID_DELETE_CHANNEL,                MENU_DEL_CH        }, // was "DEL-CH"
 	{"ChName", VOICE_ID_INVALID,                       MENU_MEM_NAME      },	
 	{"ScnRev", VOICE_ID_INVALID,                       MENU_SC_REV        },
+	{"ScHold", VOICE_ID_INVALID,                       MENU_SC_HOLD       },
 #ifdef ENABLE_NOAA
 	{"NOAA-S", VOICE_ID_INVALID,                       MENU_NOAA_S        },
 #endif
@@ -239,6 +240,16 @@ const char gSubMenu_SC_REV[][8] =
 	"TIMEOUT",
 	"CARRIER",
 	"STOP"
+};
+
+// 0 = OFF (instant), 1..30 = seconds to dwell after squelch closes before resuming
+const char gSubMenu_SC_HOLD[][4] =
+{
+	"OFF",
+	"1s",  "2s",  "3s",  "4s",  "5s",  "6s",  "7s",  "8s",  "9s",
+	"10s", "11s", "12s", "13s", "14s", "15s", "16s", "17s", "18s", "19s",
+	"20s", "21s", "22s", "23s", "24s", "25s", "26s", "27s", "28s", "29s",
+	"30s"
 };
 
 const char* const gSubMenu_MDF[] =
@@ -807,6 +818,10 @@ void UI_DisplayMenu(void)
 
 			case MENU_SC_REV:
 				strcpy(String, gSubMenu_SC_REV[gSubMenuSelection]);
+				break;
+
+			case MENU_SC_HOLD:
+				strcpy(String, gSubMenu_SC_HOLD[gSubMenuSelection]);
 				break;
 
 			case MENU_MDF:

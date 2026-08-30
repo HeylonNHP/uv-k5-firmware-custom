@@ -123,6 +123,7 @@ char freqInputString[11];
 
 uint8_t menuState = 0;
 uint16_t listenT = 0;
+uint16_t dwellT_10ms = 0;     // post-squelch dwell: counts down after signal is lost, only while still parked
 
 RegisterSpec registerSpecs[] = {
     {},
@@ -412,10 +413,16 @@ static void ToggleRX(bool on) {
 
     // turn on CSS tail found interrupt
     BK4819_WriteRegister(BK4819_REG_3F, BK4819_REG_02_CxCSS_TAIL);
+
+    // Arm the post-squelch dwell timer. 0 keeps the legacy instant-resume
+    // behaviour. A non-zero value keeps the scanner parked on this frequency
+    // for that many seconds after the signal falls below the squelch.
+    dwellT_10ms = (uint16_t)gEeprom.SCAN_HOLD_AFTER_SQUELCH * 100;
   } else
   {
     if(appMode!=CHANNEL_MODE)
       BK4819_WriteRegister(0x43, GetBWRegValueForScan());
+    dwellT_10ms = 0;
   }
 }
 
@@ -1389,10 +1396,49 @@ static void UpdateListening() {
   CheckIfTailFound();
 
   if ((IsPeakOverLevel() || monitorMode) && !gTailFound) {
-    listenT = SQUELCH_OFF_DELAY;
+    // Carrier is present (or monitor mode is on). Re-arm the dwell counter
+    // for the next silence. If the audio is currently muted from a prior
+    // dwell, ToggleRX(true) re-opens it.
+    ToggleRX(true);
     return;
   }
 
+  // Signal has just been lost. The post-squelch dwell only applies while
+  // the spectrum scanner is actively scanning (SPECTRUM state). In STILL
+  // (S-meter) mode the user is manually parked on a frequency and expects
+  // the audio to follow the squelch in real time, just like a normal
+  // receive.
+  if (currentState == SPECTRUM) {
+    if (audioState) {
+      // Audio still on, signal just dropped this tick. If the user has
+      // configured a post-squelch dwell, mute and seed the counter. We
+      // stay parked on this frequency (isListening stays true, BK4819
+      // still tuned, filter still in listen BW) so the radio can hear a
+      // re-keyed transmission and resume normal listening without a
+      // re-sweep.
+      if (gEeprom.SCAN_HOLD_AFTER_SQUELCH > 0) {
+        ToggleAudio(false);
+        dwellT_10ms = (uint16_t)gEeprom.SCAN_HOLD_AFTER_SQUELCH * 100;
+      } else {
+        // Dwell disabled: legacy instant-resume.
+        ToggleRX(false);
+        ResetScanStats();
+      }
+      return;
+    }
+
+    // Audio is muted -> we are in the dwell countdown. Tick the counter
+    // down by one (~10 ms) and stay parked. On the next iteration, if
+    // the carrier has returned, the re-arm branch above will unmute and
+    // re-arm.
+    if (dwellT_10ms > 0) {
+      dwellT_10ms--;
+      return;
+    }
+  }
+
+  // Either dwell is disabled, the countdown expired, or we are in STILL
+  // (S-meter) mode where the audio follows the squelch in real time.
   ToggleRX(false);
   ResetScanStats();
 }
