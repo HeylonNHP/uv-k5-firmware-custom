@@ -378,6 +378,8 @@ Skip:
 						// squelch closes. 0 = instant resume (today's behaviour when
 						// the user has not enabled the new feature).
 						gScanPauseDelayIn_10ms = gEeprom.SCAN_HOLD_AFTER_SQUELCH * 100;
+						if (gScanPauseDelayIn_10ms == 0)
+							gScanPauseDelayIn_10ms = 1;  // floor: DECREMENT_AND_TRIGGER only fires its flag when a counter reaches 0 from above, so a counter that starts at 0 would never resume the scan
 						gScheduleScanListen    = false;
 						break;
 
