@@ -1427,11 +1427,17 @@ static void UpdateListening() {
       return;
     }
 
-    // Audio is muted -> we are in the dwell countdown. Tick the counter
-    // down by one (~10 ms) and stay parked. On the next iteration, if
-    // the carrier has returned, the re-arm branch above will unmute and
-    // re-arm.
+    // Audio is muted -> we are in the dwell countdown. Pace the counter
+    // against the real 10 ms SysTick flag: gNextTimeslice is set by the
+    // scheduler interrupt every 10 ms and is not consumed by main() while
+    // the spectrum app owns the loop, so we consume it here (same pattern
+    // as ui/lock.c). This keeps UI keys responsive: no busy-wait delays,
+    // HandleUserInput() still runs on every loop iteration.
     if (dwellT_10ms > 0) {
+      if (!gNextTimeslice) {
+        return;             // no new 10 ms tick yet - just spin, keys still polled
+      }
+      gNextTimeslice = false;
       dwellT_10ms--;
       return;
     }
